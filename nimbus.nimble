@@ -2,7 +2,7 @@
 
 version       = "0.1.0"
 author        = "tinarskii"
-description   = "An amazingly cool web framework written in Nim"
+description   = "A somewhat useable toy web framework written in Nim"
 license       = "MIT"
 srcDir        = "src"
 
