@@ -1,7 +1,7 @@
 import types, context, router, response, httpserver
-import std/[asynchttpserver, asyncdispatch, tables]
+import std/[httpcore, tables]
 
-proc defaultErrorHandler*(ctx: Context, error: ref Exception): Future[Response] {.gcsafe async.} =
+proc defaultErrorHandler*(ctx: Context, error: ref Exception): Response {.gcsafe.} =
   if error of HttpError:
     let httpErr = HttpError(error)
     return textResponse(httpErr.msg).withStatus(httpErr.status)
@@ -20,9 +20,9 @@ proc addRoute*(app: Nimbus, httpMethod: HttpMethod, path: string, handler: Handl
   let root = app.ensureRoot(httpMethod)
   addRoute(root, httpMethod, path, handler)
 
-proc findRoute*(app: Nimbus, httpMethod: HttpMethod, path: string): tuple[handler: Handler, params: Table[string, string]] =
+proc findRoute*(app: Nimbus, httpMethod: HttpMethod, path: string): Handler =
   if not app.routers.hasKey(httpMethod):
-    return (nil, initTable[string, string]())
+    return nil
   return findRoute(app.routers[httpMethod], httpMethod, path)
 
 proc get*(app: Nimbus, path: string, handler: Handler): Nimbus {.discardable.} =

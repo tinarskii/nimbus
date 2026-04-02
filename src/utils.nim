@@ -1,4 +1,4 @@
-import std/[asynchttpserver, asyncdispatch]
+import std/httpcore
 import types
 
 proc httpError*(status: HttpCode, msg: string): HttpError =
@@ -9,11 +9,11 @@ proc builder*(
   middlewares: seq[Middleware],
   handler: Handler,
   i: int
-): Future[Response] {.gcsafe async.} =
+): Response {.gcsafe async.} =
   if i < middlewares.len:
     let middleware = middlewares[i]
-    proc next(): Future[Response] {.gcsafe async.} =
-      return await builder(ctx, middlewares, handler, i + 1)
-    return await middleware(ctx, next)
+    proc next(): Response {.gcsafe async.} =
+      return builder(ctx, middlewares, handler, i + 1)
+    return middleware(ctx, next)
   else:
-    return await handler(ctx)
+    return handler(ctx)

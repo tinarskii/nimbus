@@ -1,10 +1,9 @@
 import src/nimbus
-import asyncdispatch
-import asynchttpserver
+import std/httpcore
 
 var app = newNimbus()
 
-app.get("/", proc(ctx: Context): Future[Response] {.async.} =
+app.get("/", proc(ctx: Context): Response =
   return textResponse("Hello, World!").withStatus(Http200))
 
-waitFor app.listen(8888)
+app.listen(8888)

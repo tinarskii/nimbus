@@ -1,6 +1,6 @@
 import std/tables
-import std/asynchttpserver
-import std/asyncdispatch
+import std/httpcore
+# import std/options
 
 type
   Context* = ref object
@@ -13,10 +13,10 @@ type
     headers*: Table[string, string]
   HttpError* = ref object of CatchableError
     status*: HttpCode
-  Handler* = proc(ctx: Context): Future[Response] {.closure, gcsafe.}
-  ErrorHandler* = proc(ctx: Context, err: ref Exception): Future[Response] {.closure, gcsafe.}
-  Next* = proc(): Future[Response] {.closure, gcsafe.}
-  Middleware* = proc(ctx: Context, next: Next): Future[Response] {.closure, gcsafe.}
+  Handler* = proc(ctx: Context): Response {.closure, gcsafe.}
+  ErrorHandler* = proc(ctx: Context, err: ref Exception): Response {.closure, gcsafe.}
+  Next* = proc(): Response {.closure, gcsafe.}
+  Middleware* = proc(ctx: Context, next: Next): Response {.closure, gcsafe.}
   Route* = object
     path*: string
     handler*: Handler
@@ -26,6 +26,11 @@ type
     paramChild*: RouteNode
     paramName*: string
     handler*: Handler
+  ClientContext* = ref object
+    buffer*: array[16384, char]
+    bytesRead*: int
+    writeBuffer*: string
+    writeOffset*: int
   Nimbus* = ref object
     routers*: Table[HttpMethod, RouteNode]
     middlewares*: seq[Middleware]

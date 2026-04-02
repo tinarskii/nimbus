@@ -1,1 +1,6 @@
 switch("path", "$projectDir/../src")
+switch("opt", "speed")
+switch("define", "release")
+switch("mm", "arc")
+switch("passC", "-march=native")
+switch("passL", "-march=native")
